@@ -171,8 +171,8 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # training arguments
-    parser.add_argument('--data_path', type = str, default = '/kaggle/input/my-eeg-dataset')  # Kaggle dataset path
-    parser.add_argument('--finetune_path', type = str, default = '/kaggle/input/my-eeg-dataset')
+    parser.add_argument('--data_path', type = str, default = '/kaggle/input/tueh-test-sample/TUEH_test_sample')  # Kaggle dataset path
+    parser.add_argument('--finetune_path', type = str, default = '/kaggle/input/tueh-test-sample/TUEH_test_sample')
     parser.add_argument('--no_save', type = eval, default = False)
     parser.add_argument('--load_model', type = eval, default = True)
     parser.add_argument('--num-workers', default=6, type=int)
