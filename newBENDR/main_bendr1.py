@@ -10,6 +10,7 @@ import os
 import datetime
 import wandb
 from utils1 import RandomTemporalCrop
+from folder_to_fif import list_files_with_extension
 # from dn3.transforms.batch import RandomTemporalCrop
 
 def check_output_path(output_path):
@@ -23,32 +24,13 @@ def check_output_path(output_path):
         os.makedirs(output_path, exist_ok=True)
     return output_path
 
-def list_files_with_extension(root_folder, extension):
-    assert isinstance(root_folder, str), "root_folder must be a string"
-    assert isinstance(extension, str), "extension must be a string"
-    assert os.path.isdir(root_folder), f"{root_folder} is not a valid directory"
-    assert extension.startswith("."), "extension should start with a dot (.)"
-
-    matching_files = []
-
-    for dirpath, dirnames, filenames in os.walk(root_folder):
-        for filename in filenames:
-            if filename.endswith(extension):
-                full_path = os.path.join(dirpath, filename)
-                matching_files.append(full_path)
-
-    assert isinstance(matching_files, list), "The output should be a list"
-
-    return matching_files
-
-
 mul_channel_explanations = {
      'None': 'Multi channel setup is set to None.',
      'sample_channel': 'Multi channel setup is set to sample_channel. This means that sampled channels will be used as each others augmented versions.',
      'avg_ch': 'Multi channel setup is set to ch_avg. This means that the channels are averaged before convolutions.'
 }
 def main(args):
-    dset = list_files_with_extension(args.data_path, '.fif')
+    dset = (args.data_path, '.fif')
     output_path = f'{args.output_path}/MultiView_{dset}_pretrain_{args.pretrain}_pretrain_subjs_{args.sample_pretrain_subjects}'
     
     
