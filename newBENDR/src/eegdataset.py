@@ -16,7 +16,6 @@ from scipy.signal import filtfilt, butter, sosfiltfilt
 from sklearn.model_selection import train_test_split
 import warnings
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
-from folder_to_fif import list_files_with_extension
 
 def construct_eeg_datasets(data_path, 
                            finetune_path,
@@ -39,8 +38,7 @@ def construct_eeg_datasets(data_path,
                            chunk_duration = '30',
                            **kwargs):
     experiment = ExperimentConfig(data_path)
-                             
-    dset = list_files_with_extension(data_path, '.fif')
+    dset = data_path.split('/')[-1].strip('.yml').split('_')[0]
     config = experiment.datasets[dset]
     config.normalize = False
     if balanced_sampling == 'pretrain' or balanced_sampling == 'both':
