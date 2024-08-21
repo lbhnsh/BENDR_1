@@ -10,7 +10,6 @@ import os
 import datetime
 import wandb
 from utils1 import RandomTemporalCrop
-from folder_to_fif import list_files_with_extension
 # from dn3.transforms.batch import RandomTemporalCrop
 
 def check_output_path(output_path):
@@ -30,9 +29,8 @@ mul_channel_explanations = {
      'avg_ch': 'Multi channel setup is set to ch_avg. This means that the channels are averaged before convolutions.'
 }
 def main(args):
-    dset = (args.data_path, '.fif')
+    dset = args.data_path.split('/')[-1].strip('.yml')
     output_path = f'{args.output_path}/MultiView_{dset}_pretrain_{args.pretrain}_pretrain_subjs_{args.sample_pretrain_subjects}'
-    
     
     output_path = check_output_path(output_path)
     args.outputh_path = output_path
@@ -171,8 +169,8 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # training arguments
-    parser.add_argument('--data_path', type = str, default = '/kaggle/input/tueh-test-sample/TUEH_test_sample')  # Kaggle dataset path
-    parser.add_argument('--finetune_path', type = str, default = '/kaggle/input/tueh-test-sample/TUEH_test_sample')
+    parser.add_argument('--data_path', type = str, default = '/kaggle/working/TUEH_test_sample.yaml')
+    parser.add_argument('--finetune_path', type = str, default = '/kaggle/working/TUEH_test_sample.yaml')
     parser.add_argument('--no_save', type = eval, default = False)
     parser.add_argument('--load_model', type = eval, default = True)
     parser.add_argument('--num-workers', default=6, type=int)
@@ -221,4 +219,3 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type = int, default = 42)
     args = parser.parse_args()
     main(args)
-
