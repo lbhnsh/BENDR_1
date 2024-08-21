@@ -4449,8 +4449,8 @@ class ExperimentConfig:
             self._original_config = yaml.load(fio, Loader=yaml.FullLoader)
         working_config = self._original_config.copy()
 
-        if 'Configuratron' not in working_config.keys():
-            raise DN3ConfigException("Toplevel `Configuratron` not found in: {}".format(config_filename))
+        # if 'Configuratron' not in working_config.keys():
+        #     raise DN3ConfigException("Toplevel `Configuratron` not found in: {}".format(config_filename))
         if 'datasets' not in working_config.keys():
             raise DN3ConfigException("`datasets` not found in {}".format([k.lower() for k in
                                                                           working_config.keys()]))
