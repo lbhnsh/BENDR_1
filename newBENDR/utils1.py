@@ -4481,19 +4481,38 @@ class ExperimentConfig:
             relative_directory = self.experiment.get('relative_directory', None)
 
         self.datasets = dict()
-        for i, name in enumerate(usable_datasets):
+        # for i, name in enumerate(usable_datasets):
+        #     if name in ds_entries.keys():
+        #         self.datasets[name] = DatasetConfig(name, ds_entries[name], deep1010=self._make_deep1010,
+        #                                             samples=self.global_samples, sfreq=self.global_sfreq,
+        #                                             preload=preload, return_trial_ids=return_trial_ids,
+        #                                             relative_directory=relative_directory)
+        #     else:
+        #         raise DN3ConfigException("Could not find {} in datasets".format(name))
+
+        # print("Configuratron found {} datasets.".format(len(self.datasets), "s" if len(self.datasets) > 0 else ""))
+
+        # if adopt_auxiliaries:
+        #     _adopt_auxiliaries(self, working_config)
+        for name in usable_datasets:
             if name in ds_entries.keys():
-                self.datasets[name] = DatasetConfig(name, ds_entries[name], deep1010=self._make_deep1010,
-                                                    samples=self.global_samples, sfreq=self.global_sfreq,
-                                                    preload=preload, return_trial_ids=return_trial_ids,
-                                                    relative_directory=relative_directory)
+                self.datasets[name] = {}
+                for subject, sessions in ds_entries[name].items():
+                    self.datasets[name][subject] = {}
+                    for session, recordings in sessions.items():
+                        self.datasets[name][subject][session] = DatasetConfig(
+                            name, recordings, deep1010=self._make_deep1010,
+                            samples=self.global_samples, sfreq=self.global_sfreq,
+                            preload=preload, return_trial_ids=return_trial_ids,
+                            relative_directory=relative_directory
+                        )
             else:
                 raise DN3ConfigException("Could not find {} in datasets".format(name))
 
-        print("Configuratron found {} datasets.".format(len(self.datasets), "s" if len(self.datasets) > 0 else ""))
+        print("Configuratron found {} datasets.".format(len(self.datasets)))
 
         if adopt_auxiliaries:
-            _adopt_auxiliaries(self, working_config)
+            self._adopt_auxiliaries(working_config)
 
 class RandomTemporalCrop(BatchTransform):
 
