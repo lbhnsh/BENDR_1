@@ -28,6 +28,40 @@ mul_channel_explanations = {
      'sample_channel': 'Multi channel setup is set to sample_channel. This means that sampled channels will be used as each others augmented versions.',
      'avg_ch': 'Multi channel setup is set to ch_avg. This means that the channels are averaged before convolutions.'
 }
+
+def load_fif_files(folder_path):
+    """Load all .fif files in a directory."""
+    raw_list = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".fif"):
+            raw = mne.io.read_raw_fif(os.path.join(folder_path, filename), preload=True)
+            raw_list.append(raw)
+    return raw_list
+
+def construct_eeg_datasets1(data_path, **kwargs):
+    # Implement loading and processing the EEG data from the .fif files
+    raw, events, event_id = load_fif_data(data_path)
+    
+    # Extract data and labels
+    epochs = mne.Epochs(raw, events, event_id, preload=True)
+    X = epochs.get_data()
+    y = epochs.events[:, -1]
+    
+    # Split data into training, validation, and test sets as required
+    # Here, you might need to create PyTorch datasets or dataloaders from X and y
+    # The following is just a placeholder
+    train_loader = torch.utils.data.DataLoader((X, y), batch_size=kwargs.get('batchsize', 64))
+    val_loader = torch.utils.data.DataLoader((X, y), batch_size=kwargs.get('batchsize', 64))
+    test_loader = torch.utils.data.DataLoader((X, y), batch_size=kwargs.get('batchsize', 64))
+    
+    # Placeholder for channel, time_length, and num_classes
+    channels = X.shape[1]
+    time_length = X.shape[2]
+    num_classes = len(event_id)
+    
+    return train_loader, val_loader, val_loader, val_loader, test_loader, (channels, time_length, num_classes)
+
+
 def main(args):
     dset = args.data_path.split('/')[-1].strip('.yml')
     output_path = f'{args.output_path}/MultiView_{dset}_pretrain_{args.pretrain}_pretrain_subjs_{args.sample_pretrain_subjects}'
@@ -40,8 +74,9 @@ def main(args):
     args.train_mode = 'pretrain' if args.pretrain and not args.finetune else 'finetune' if args.finetune else 'both' 
     args.standardize_epochs = 'channelwise'
     args.bendr_setup = True
-    
-    pretrain_loader, pretrain_val_loader, finetune_loader, finetune_val_loader, test_loader, (channels, time_length, num_classes) = construct_eeg_datasets(**vars(args))
+
+    pretrain_loader, pretrain_val_loader, finetune_loader, finetune_val_loader, test_loader, (channels, time_length, num_classes) = construct_eeg_datasets1(args.data_path, **vars(args))
+    # pretrain_loader, pretrain_val_loader, finetune_loader, finetune_val_loader, test_loader, (channels, time_length, num_classes) = construct_eeg_datasets(**vars(args))
     
     if args.pretrain:
         
